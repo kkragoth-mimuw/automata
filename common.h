@@ -5,7 +5,7 @@
 #ifndef AUTOMATA_COMMON_H
 #define AUTOMATA_COMMON_H
 
-const int BUF_SIZE = 256;
+const int BUF_SIZE = 1002;
 
 const int MAX_STATES = 100;
 

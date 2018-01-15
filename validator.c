@@ -5,10 +5,11 @@
 #include <stdbool.h>
 #include <memory.h>
 #include <string.h>
+#include <mqueue.h>
 
 #include "common.h"
 
-char buffer[BUF_SIZE] = {0};
+char buffer[BUF_SIZE] = { 0 };
 size_t buf_size = BUF_SIZE;
 
 
