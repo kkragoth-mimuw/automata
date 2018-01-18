@@ -1,0 +1,1 @@
+/usr/bin/cc     CMakeFiles/tester.dir/tester.c.o CMakeFiles/tester.dir/err.c.o CMakeFiles/tester.dir/common.c.o CMakeFiles/tester.dir/protocol.c.o  -o tester -rdynamic -lrt 

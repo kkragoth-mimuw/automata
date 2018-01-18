@@ -3,8 +3,10 @@ project(automata C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(validator validator.c err.h err.c common.h protocol.h spawner.h spawner.c)
-add_executable(run run.c err.h err.c common.h protocol.h spawner.h spawner.c)
-add_executable(tester tester.c err.h err.c common.h protocol.h)
+add_executable(validator validator.c err.h err.c common.h common.c protocol.h protocol.c spawner.h spawner.c)
+target_link_libraries(validator rt)
+add_executable(run run.c err.h err.c common.h common.c protocol.h protocol.c spawner.h spawner.c)
+add_executable(tester tester.c err.h err.c common.h common.c protocol.h protocol.c)
+target_link_libraries(tester rt)
 
 

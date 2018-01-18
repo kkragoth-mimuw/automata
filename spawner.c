@@ -48,9 +48,7 @@ void spawn_run() {
                     )
                 syserr("close\n");
 
-            write_to_child_with_check(PARENT_WRITE_FD, input);
-            write_to_child_with_check(PARENT_WRITE_FD, stack);
-            write_to_child_with_check(PARENT_WRITE_FD, result);
+            // pass automata description to child
 
             int buf_len = 0;
             if ((buf_len = read(PARENT_READ_FD, buffer, BUF_SIZE - 2)) == -1)

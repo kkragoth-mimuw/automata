@@ -13,7 +13,7 @@ char buffer[BUF_SIZE] = { 0 };
 int main() {
     struct mq_attr mq_a;
 
-    mqd_t desc = mq_open(MSG_QUEUE_NAME, O_RDONLY);
+    mqd_t desc = mq_open(VALIDATOR_MQ_NAME, O_RDONLY);
 
     while(scanf("%s", buffer) != EOF) {
 

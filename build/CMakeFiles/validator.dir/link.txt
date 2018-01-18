@@ -1,0 +1,1 @@
+/usr/bin/cc     CMakeFiles/validator.dir/validator.c.o CMakeFiles/validator.dir/err.c.o CMakeFiles/validator.dir/common.c.o CMakeFiles/validator.dir/protocol.c.o CMakeFiles/validator.dir/spawner.c.o  -o validator -rdynamic -lrt 

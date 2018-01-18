@@ -8,6 +8,8 @@
 #include <mqueue.h>
 
 #include "common.h"
+#include "protocol.h"
+#include "err.h"
 
 
 // Automata description
@@ -24,7 +26,7 @@ char buffer[BUF_SIZE] = { 0 };
 
 void initialize_accepting_states_from_stdin() {
     int accepting_state;
-    fgets(&buffer, BUF_SIZE - 2, stdin);
+    fgets(buffer, BUF_SIZE - 2, stdin);
 
     int bytes_consumed = 0;
     int bytes_now = 0;
@@ -45,7 +47,7 @@ void initialize_transitions_from_stdin(int lines) {
         int state_from, state_to;
         int number_of_states_to_already_processed = 0;
 
-        fgets(&buffer, BUF_SIZE - 2, stdin);
+        fgets(buffer, BUF_SIZE - 2, stdin);
 
         int bytes_now = 0;
 
