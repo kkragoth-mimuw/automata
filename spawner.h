@@ -9,3 +9,4 @@
 #define CHILD_WRITE_FD      pipes[0][1]
 
 void spawn_run();
+void pass_automata_desc_to_child(int fd);
