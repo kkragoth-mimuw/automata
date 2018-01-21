@@ -6,7 +6,8 @@
 #define AUTOMATA_COMMON_H
 
 #include <stdbool.h>
-#define BUF_SIZE 1002
+
+#define BUF_SIZE 8192
 #define MAX_STATES  100
 #define ALPHABET_SIZE 'z' - 'a' + 1
 
