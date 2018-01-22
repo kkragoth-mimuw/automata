@@ -12,8 +12,8 @@
 #define MSGSIZE 1337
 #define MAX_TESTERS 1000
 
-const char* VALIDATOR_MQ = "/validatorPSZLC";
-const char* TESTER_MQ_PREFIX = "/testerMqPSZLC";
+const char* VALIDATOR_MQ = "/validatorPSZ";
+const char* TESTER_MQ_PREFIX = "/testerPSZ";
 
 const char* INTRODUCTION = "@";
 const char* SEPARATOR = "#";
