@@ -10,7 +10,7 @@
 
 #include "spawner.h"
 
-void spawn_run() {
+void spawn_run(int *N, int *A, int *Q, int *U, int *F, int *initial_state, bool *accepting_states, int transitions[MAX_STATES][ALPHABET_SIZE][MAX_STATES], char *pid, char *word, int next_state) {
     int pipes[2][2];
     char buffer[BUF_SIZE] = "";
 
@@ -39,7 +39,7 @@ void spawn_run() {
                 }
             }
 
-            execl("./W", "W", NULL);
+            execl("./run", "run", NULL);
             syserr("exec\n");
 
         default:
@@ -48,15 +48,44 @@ void spawn_run() {
                     )
                 syserr("close\n");
 
-            // pass automata description to child
+            // pass automata description
+            print_automata(PARENT_WRITE_FD, N, A, Q, U, F, initial_state, accepting_states, transitions);
+            // pass configuration
+            dprintf(PARENT_WRITE_FD, "%s %s %d", pid, word, next_state);
 
-            int buf_len = 0;
-            if ((buf_len = read(PARENT_READ_FD, buffer, BUF_SIZE - 2)) == -1)
-                syserr("read\n");
-            printf("%s", buffer);
+            return;
+    }
+}
 
-            if (wait(0) == -1)
-                syserr("wait\n");
+void spawn_root_run(int *N, int *A, int *Q, int *U, int *F, int *initial_state, bool *accepting_states, int transitions[MAX_STATES][ALPHABET_SIZE][MAX_STATES], char *pid, char *word, int next_state) {
+    int pipe_dsc[2];
+    if (pipe(pipe_dsc) == -1) {
+        syserr("Error in pipe");
+    }
+
+    switch (fork())
+    {
+        case -1:
+            syserr("fork\n");
+
+        case 0:
+            if (close (0) == -1)            syserr("Error in child, close (0)\n");
+            if (dup (pipe_dsc [0]) != 0)    syserr("Error in child, dup (pipe_dsc [0])\n");
+            if (close (pipe_dsc [0]) == -1) syserr("Error in child, close (pipe_dsc [0])\n");
+            if (close (pipe_dsc [1]) == -1) syserr("Error in child, close (pipe_dsc [1])\n");
+
+            execl("./run", "run", NULL);
+            syserr("exec\n");
+
+        default:
+            if (close (pipe_dsc [0]) == -1) syserr("Error in parent, close (pipe_dsc [0])\n");
+
+            // pass automata description
+            print_automata(pipe_dsc[1], N, A, Q, U, F, initial_state, accepting_states, transitions);
+            // pass configuration
+            dprintf(pipe_dsc[1], "%s %s %d", pid, word, next_state);
+
+            if (close (pipe_dsc [1]) == -1) syserr("Error in parent, close (pipe_dsc [1])\n");
 
             return;
     }

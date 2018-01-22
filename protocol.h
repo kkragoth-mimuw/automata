@@ -8,10 +8,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-const char* VALIDATOR_MQ = "/validatorMq";
-
 #define MAX_MSGS 10
-const char* TESTER_MQ_PREFIX = "tester_mq_";
+#define MAX_TESTERS 1000
+
+const char* VALIDATOR_MQ = "/validatorMq";
+const char* TESTER_MQ_PREFIX = "/testerMq";
+
 
 const char* WORD_IS_INVALID = "INVALID_WORD";
 const char* WORD_IS_VALID = "VALID_WORD";
