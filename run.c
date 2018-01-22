@@ -49,21 +49,7 @@ int main() {
         is_word_valid = accepting_states[current_state];
     }
     else {
-        int word_offset = 0;
-        int transition_letter = 0;
-        while (strcmp(word + word_offset + 1, END_OF_WORD) != 0) {
-            transition_letter = map_char_to_int(word[word_offset]);
-
-            if (transitions[current_state][transition_letter][1] == INVALID_STATE) {
-                current_state = transitions[current_state][transition_letter][0];
-                word_offset += 1;
-            }
-            else {
-                break;
-            }
-        }
-
-        transition_letter = map_char_to_int(word[word_offset]);
+        int transition_letter = map_char_to_int(word[0]);
 
         for (int i = 0; i < MAX_STATES; i++) {
             int next_state = transitions[current_state][transition_letter][i];
@@ -72,7 +58,7 @@ int main() {
                 break;
             }
 
-            fd[children_created] = spawn_run(validator_pid, &N, &A, &Q, &U, &F, &initial_state, accepting_states, transitions, INVALID_PID, word + word_offset + 1, next_state);
+            fd[children_created] = spawn_run(validator_pid, &N, &A, &Q, &U, &F, &initial_state, accepting_states, transitions, INVALID_PID, word + 1, next_state);
             children_created += 1;
         }
 
