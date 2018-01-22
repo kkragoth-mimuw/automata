@@ -12,7 +12,7 @@
 #define ALPHABET_SIZE 'z' - 'a' + 1
 
 #define INVALID_STATE -1
-#define INVALID_PID "-1"
+#define INVALID_PID "0"
 
 int map_char_to_int(char c);
 char map_int_to_Char(int c);

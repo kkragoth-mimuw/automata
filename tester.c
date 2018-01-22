@@ -16,6 +16,8 @@
 int snt, rcd, acc;
 
 int main() {
+    printf("PID: %d", getpid());
+
     char buffer[BUF_SIZE] = { 0 };
     char message[BUF_SIZE] = { 0 };
     char my_mq_name[BUF_SIZE] = { 0 };

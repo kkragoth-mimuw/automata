@@ -10,7 +10,7 @@
 
 #include "spawner.h"
 
-void spawn_run(int *N, int *A, int *Q, int *U, int *F, int *initial_state, bool *accepting_states, int transitions[MAX_STATES][ALPHABET_SIZE][MAX_STATES], char *pid, char *word, int next_state) {
+int spawn_run(int *N, int *A, int *Q, int *U, int *F, int *initial_state, bool *accepting_states, int transitions[MAX_STATES][ALPHABET_SIZE][MAX_STATES], char *pid, char *word, int next_state) {
     int pipes[2][2];
     char buffer[BUF_SIZE] = "";
 
@@ -48,12 +48,13 @@ void spawn_run(int *N, int *A, int *Q, int *U, int *F, int *initial_state, bool 
                     )
                 syserr("close\n");
 
-            // pass automata description
             print_automata(PARENT_WRITE_FD, N, A, Q, U, F, initial_state, accepting_states, transitions);
             // pass configuration
             dprintf(PARENT_WRITE_FD, "%s %s %d", pid, word, next_state);
 
-            return;
+            close(PARENT_WRITE_FD);
+
+            return PARENT_READ_FD;
     }
 }
 

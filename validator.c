@@ -71,7 +71,7 @@ int main() {
         strcat(message, buffer + strcspn(buffer, "#") + 1);
         buffer[strcspn(buffer, "#")] = 0;
 
-        // printf("%s\n%s\n", buffer, message);
+        printf("VALIDATOR: %s\n%s\n***\n", buffer, message);
 
         long pid = atol(buffer);
         int tester_position = 0;
@@ -117,6 +117,7 @@ int main() {
         else if (accept_new_words) {
             rcd += 1;
             testers[tester_position].p += 1;
+            strcat(message, END_OF_WORD);
             spawn_root_run(&N, &A, &Q, &U, &F, &initial_state, accepting_states, transitions, buffer, message, initial_state);
             running_children += 1;
         }
