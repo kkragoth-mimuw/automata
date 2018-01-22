@@ -15,6 +15,8 @@
 const char* VALIDATOR_MQ = "/validatorMq";
 const char* TESTER_MQ_PREFIX = "/testerMq";
 
+const char* INTRODUCTION = "@";
+const char* SEPARATOR = "#";
 const char* END_OF_WORD = "$";
 const char* WORD_IS_INVALID = "WORD_IS_INVALID";
 const char* WORD_IS_VALID = "WORD_IS_VALID";

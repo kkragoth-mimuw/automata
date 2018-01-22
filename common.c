@@ -27,7 +27,7 @@ void read_automata_description_from_stdin(int *N, int *A, int *Q, int *U, int *F
 }
 
 void print_automata(int fd, int *N, int *A, int *Q, int *U, int *F, int *initial_state, bool *accepting_states, int transitions[MAX_STATES][ALPHABET_SIZE][MAX_STATES]) {
-    int n = dprintf(fd, "%d %d %d %d %d\n", *N, *A, *Q, *U, *F);
+    dprintf(fd, "%d %d %d %d %d\n", *N, *A, *Q, *U, *F);
 
     dprintf(fd, "%d\n", *initial_state);
 

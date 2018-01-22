@@ -33,7 +33,6 @@ void print_stats() {
 }
 
 void panic_cleanup() {
-    printf("PANIC\n");
     mq_close(my_mq_desc);
     mq_close(validator_desc);
     mq_unlink(my_mq_name);
@@ -59,8 +58,6 @@ static void mq_notify_callback(union sigval sv) {
             syserr("Error in rec: ");
         }
 
-        // printf("\nincoming message: %s\n", buffer);
-
         if (strstr(buffer, ENDING_SYMBOL) != NULL) {
             finished = true;
         }
@@ -81,6 +78,7 @@ static void mq_notify_callback(union sigval sv) {
         }
 
         if (finished && (snt == rcd)) {
+            print_stats();
             close(0);
             exit(0);
         }
@@ -109,6 +107,11 @@ int main() {
     action.sa_handler = sigint_handler;
     action.sa_mask = block_mask;
     action.sa_flags = 0;
+
+    if (sigaction(SIGINT, &action, 0) == -1) {
+        syserr("sigaction");
+    }
+
     printf("PID: %d\n", getpid());
 
     char buffer[BUF_SIZE] = { 0 };
@@ -141,6 +144,13 @@ int main() {
     if (validator_desc == (mqd_t) -1) {
         panic_cleanup();
         syserr("Error in mq_open");
+    }
+
+    memset(message, 0, BUF_SIZE);
+    sprintf(message, "%ld#%s", (long) getpid(), INTRODUCTION);
+    if (mq_send(validator_desc, message, strlen(message), 1)) {
+        panic_cleanup();
+        syserr("Error in mq_send");
     }
 
     while(!finished && fgets(buffer, BUF_SIZE, stdin) != NULL) {

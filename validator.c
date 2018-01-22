@@ -38,7 +38,7 @@ void panic_cleanup() {
         if (testers[i].pid == 0) {
             break;
         }
-        kill(testers[i].pid, SIGINT);
+        kill((pid_t) testers[i].pid, SIGINT);
     }
 }
 
@@ -104,26 +104,39 @@ int main() {
         strcat(message, buffer + strcspn(buffer, "#") + 1);
         buffer[strcspn(buffer, "#")] = 0;
 
-        ////printf("VALIDATOR: %s\n%s\n***\n", buffer, message);
-
         long pid = atol(buffer);
-        int tester_position = 0;
-        for (; tester_position < MAX_TESTERS; tester_position++) {
-            if (testers[tester_position].pid == pid) {
-                break;
-            }
-            if (testers[tester_position].pid == 0) {
-                testers[tester_position].pid = pid;
-                sprintf(tester_mq_name, "%s%s",TESTER_MQ_PREFIX,  buffer);
-                testers[tester_position].mq_desc = mq_open(tester_mq_name, O_WRONLY);
+        int tester_position = -1;
+        if ((strstr(message, INTRODUCTION) != NULL) && accept_new_words) {
+            for (int i = 0; i < MAX_TESTERS; i++) {
+                if (testers[i].pid == 0) {
+                    testers[i].pid = pid;
+                    sprintf(tester_mq_name, "%s%s",TESTER_MQ_PREFIX,  buffer);
+                    testers[i].mq_desc = mq_open(tester_mq_name, O_WRONLY);
 
-                if (testers[tester_position].mq_desc == (mqd_t) -1) {
-                    syserr("Error in mq_open");
+                    if (testers[i].mq_desc == (mqd_t) -1) {
+                        syserr("Error in mq_open");
+                    }
+
+                    testers[i].p = 0;
+                    testers[i].q = 0;
+
+                    tester_position = i;
+
+                    break;
                 }
+            }
+        }
 
-                testers[tester_position].p = 0;
-                testers[tester_position].q = 0;
-                break;
+        if (tester_position == -1) {
+            for (int i = 0; i < MAX_TESTERS; i++) {
+                if (testers[i].pid == pid) {
+                    tester_position = i;
+                    break;
+                }
+            }
+
+            if (tester_position == -1) {
+                continue;
             }
         }
 
@@ -148,7 +161,7 @@ int main() {
                 syserr("Error in mq_send");
             }
         }
-        else if (accept_new_words) {
+        else if (accept_new_words && strstr(message, INTRODUCTION) == NULL) {
             rcd += 1;
             testers[tester_position].p += 1;
             strcat(message, END_OF_WORD);
@@ -164,9 +177,7 @@ int main() {
             break;
         }
 
-        kill(testers[i].pid, SIGINT);
-        // killuj testera
-        // mq_send(testers[i].mq_desc, ENDING_SYMBOL, strlen(ENDING_SYMBOL), 1); // dont check; some testers might have already gone away
+        mq_send(testers[i].mq_desc, ENDING_SYMBOL, strlen(ENDING_SYMBOL), 1); // dont check; some testers might have already gone away
 
         printf("PID: %ld\nRcd: %d\nAcc: %d\n", testers[i].pid, testers[i].p, testers[i].q);
     }

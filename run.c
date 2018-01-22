@@ -45,11 +45,8 @@ int main() {
     bool is_word_valid = false;
     int children_created = 0;
 
-     //fprintf(stderr, "\n%c: %d\n", word[0], current_state);
     if (strcmp(word, END_OF_WORD) == 0) {
-       // fprintf(stderr, "\n*** END OF WORD ***");
         is_word_valid = accepting_states[current_state];
-       //c fprintf(stderr, "\n%d\n***\n", is_word_valid);
     }
     else {
         int word_offset = 0;
@@ -93,11 +90,7 @@ int main() {
                 syserr("close");
             }
 
-            //fprintf(stderr, "GOT RESPONSE FROM CHILD %s \n", child_response);
-
             bool child_response_is_valid = strcmp(child_response, WORD_IS_VALID) == 0;
-
-            // fprintf(stderr, "CHILD %d \n", child_response_is_valid);
 
             every_state_is_valid = every_state_is_valid && child_response_is_valid;
             exists_state_that_is_valid = exists_state_that_is_valid || child_response_is_valid;
@@ -106,7 +99,6 @@ int main() {
                 kill(validator_pid, SIGINT);
                 syserr("Error in wait");
             }
-
         }
         if (current_state < U) { // universal state
             is_word_valid = every_state_is_valid;
