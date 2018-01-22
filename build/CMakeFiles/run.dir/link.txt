@@ -1,1 +1,0 @@
-/usr/bin/cc     CMakeFiles/run.dir/run.c.o CMakeFiles/run.dir/err.c.o CMakeFiles/run.dir/common.c.o CMakeFiles/run.dir/protocol.c.o CMakeFiles/run.dir/spawner.c.o  -o run -rdynamic 

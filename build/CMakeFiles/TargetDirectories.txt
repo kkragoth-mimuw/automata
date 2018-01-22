@@ -1,5 +1,0 @@
-/home/vagrant/dev/automata/build/CMakeFiles/edit_cache.dir
-/home/vagrant/dev/automata/build/CMakeFiles/validator.dir
-/home/vagrant/dev/automata/build/CMakeFiles/run.dir
-/home/vagrant/dev/automata/build/CMakeFiles/rebuild_cache.dir
-/home/vagrant/dev/automata/build/CMakeFiles/tester.dir
