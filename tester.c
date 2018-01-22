@@ -181,8 +181,10 @@ int main() {
         }
     }
 
-    while (rcd < snt) {
-        // mq_notify will take over ending program
+    if (rcd < snt) {
+        while (true) {
+            // mq_notify will take over ending program
+        }
     }
 
     print_stats();

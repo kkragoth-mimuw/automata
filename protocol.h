@@ -9,7 +9,7 @@
 #include <sys/types.h>
 
 #define MAX_MSGS 10
-#define MSGSIZE 8192
+#define MSGSIZE 1337
 #define MAX_TESTERS 1000
 
 const char* VALIDATOR_MQ = "/validatorMq";
