@@ -14,7 +14,7 @@
 const char* VALIDATOR_MQ = "/validatorMq";
 const char* TESTER_MQ_PREFIX = "/testerMq";
 
-
+const char* END_OF_WORD = "$";
 const char* WORD_IS_INVALID = "INVALID_WORD";
 const char* WORD_IS_VALID = "VALID_WORD";
 const char* ENDING_SYMBOL = "!";

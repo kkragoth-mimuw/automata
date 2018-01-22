@@ -93,14 +93,8 @@ int main() {
         }
     }
 
-    if (is_word_valid) {
-        printf("%s", WORD_IS_VALID);
-    }
-    else {
-        printf("%s", WORD_IS_INVALID);
-    }
-
     if (strcmp(pid, INVALID_PID) != 0) {
+        memset(message, 0 , BUF_SIZE);
         mqd_t validator_desc = mq_open(VALIDATOR_MQ, O_WRONLY);
 
         sprintf(message, "%s#%s", pid, is_word_valid ? WORD_IS_VALID : WORD_IS_INVALID);
@@ -108,5 +102,15 @@ int main() {
         int ret = mq_send(validator_desc, message, strlen(message), 1);
         if (ret)
             syserr("Error in mq_send");
+    }
+    else {
+
+        if (is_word_valid) {
+            printf("%s", WORD_IS_VALID);
+        }
+        else {
+            printf("%s", WORD_IS_INVALID);
+
+        }
     }
 }

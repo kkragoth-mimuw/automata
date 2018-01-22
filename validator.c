@@ -16,6 +16,8 @@
 #include "spawner.h"
 #include "err.h"
 
+mqd_t validator_mq_desc;
+
 int snt, rcd, acc;
 
 struct {
@@ -25,7 +27,28 @@ struct {
     int q;
 } testers[MAX_TESTERS];
 
+void print_summary() {
+
+}
+
+void panic_cleanup() {
+    mq_unlink(VALIDATOR_MQ);
+    mq_close(validator_mq_desc);
+}
+
 int main() {
+    struct mq_attr attr;
+    attr.mq_flags = 0;
+    attr.mq_maxmsg = 10;
+    attr.mq_msgsize = BUF_SIZE;
+    attr.mq_curmsgs = 0;
+
+    validator_mq_desc = mq_open(VALIDATOR_MQ, O_RDWR | O_CREAT, 0644, &attr);
+
+    if (validator_mq_desc == (mqd_t) - 1) {
+        syserr("Error in mq_open");
+    }
+
     int N, A, Q, U, F, initial_state;
 
     bool accepting_states[100];
@@ -43,19 +66,6 @@ int main() {
         testers[i].pid = 0;
     }
 
-    struct mq_attr attr;
-    attr.mq_flags = 0;
-    attr.mq_maxmsg = 10;
-    attr.mq_msgsize = BUF_SIZE;
-    attr.mq_curmsgs = 0;
-
-    mqd_t validator_mq_desc = mq_open(VALIDATOR_MQ, O_RDWR | O_CREAT, 0644, &attr);
-
-    if (validator_mq_desc == (mqd_t) - 1) {
-        syserr("Error in mq_open");
-    }
-
-
     int running_children = 0;
     bool accept_new_words = true;
 
@@ -71,7 +81,7 @@ int main() {
         strcat(message, buffer + strcspn(buffer, "#") + 1);
         buffer[strcspn(buffer, "#")] = 0;
 
-        printf("VALIDATOR: %s\n%s\n***\n", buffer, message);
+        ////printf("VALIDATOR: %s\n%s\n***\n", buffer, message);
 
         long pid = atol(buffer);
         int tester_position = 0;
