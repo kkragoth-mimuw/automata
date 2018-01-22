@@ -38,6 +38,7 @@ void panic_cleanup() {
         if (testers[i].pid == 0) {
             break;
         }
+        mq_close(testers[i].mq_desc);
         kill((pid_t) testers[i].pid, SIGINT);
     }
 }
@@ -178,6 +179,8 @@ int main() {
         }
 
         mq_send(testers[i].mq_desc, ENDING_SYMBOL, strlen(ENDING_SYMBOL), 1); // dont check; some testers might have already gone away
+
+        mq_close(testers[i].mq_desc);
 
         printf("PID: %ld\nRcd: %d\nAcc: %d\n", testers[i].pid, testers[i].p, testers[i].q);
     }
