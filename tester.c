@@ -21,7 +21,7 @@ char my_mq_name[BUF_SIZE] = { 0 };
 
 bool finished = false;
 
-int snt, rcd, acc;
+volatile int snt, rcd, acc;
 
 char buffer[BUF_SIZE] = { 0 };
 char word[BUF_SIZE] = { 0 } ;
@@ -80,6 +80,19 @@ static void mq_notify_callback(union sigval sv) {
         if (finished && (snt == rcd)) {
             print_stats();
             close(0);
+
+            if (mq_close(my_mq_desc)) {
+                syserr("Error in close");
+            }
+
+            if (mq_close(validator_desc)) {
+                syserr("Error in close");
+            }
+
+            if (mq_unlink(my_mq_name)) {
+                syserr("Error in unlink");
+            }
+
             exit(0);
         }
 
@@ -132,7 +145,7 @@ int main() {
     my_mq_desc = mq_open(my_mq_name, O_RDWR | O_CREAT, 0644, &attr);
     if (my_mq_desc == (mqd_t) -1) {
         panic_cleanup();
-        syserr("Error in mq_open");
+        syserr("Error in my msq mq_open");
     }
 
     if (mq_notify(my_mq_desc, &sev) == -1) {
@@ -143,7 +156,7 @@ int main() {
 
     if (validator_desc == (mqd_t) -1) {
         panic_cleanup();
-        syserr("Error in mq_open");
+        syserr("Error in validator mq_open");
     }
 
     memset(message, 0, BUF_SIZE);
@@ -166,6 +179,10 @@ int main() {
         if (strcmp(buffer, ENDING_SYMBOL) != 0) {
             snt += 1;
         }
+    }
+
+    while (rcd < snt) {
+        // mq_notify will take over ending program
     }
 
     print_stats();
