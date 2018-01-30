@@ -49,7 +49,30 @@ int main() {
         is_word_valid = accepting_states[current_state];
     }
     else {
-        int transition_letter = map_char_to_int(word[0]);
+        int offset = 0;
+        while (word[offset + 1] != '$') {
+            int available_states = 0;
+            int transition_letter = map_char_to_int(word[offset]);
+
+            for (int i = 0; i < MAX_STATES; i++) {
+                int next_state = transitions[current_state][transition_letter][i];
+
+                if (next_state == INVALID_STATE) {
+                    available_states = i;
+                    break;
+                }
+            }
+
+            if (available_states == 1) {
+                current_state = transitions[current_state][transition_letter][0];
+                offset++;
+            }
+            else {
+                break;
+            }
+        }
+
+        int transition_letter = map_char_to_int(word[offset]);
 
         for (int i = 0; i < MAX_STATES; i++) {
             int next_state = transitions[current_state][transition_letter][i];
@@ -58,7 +81,7 @@ int main() {
                 break;
             }
 
-            fd[children_created] = spawn_run(validator_pid, &N, &A, &Q, &U, &F, &initial_state, accepting_states, transitions, INVALID_PID, word + 1, next_state);
+            fd[children_created] = spawn_run(validator_pid, &N, &A, &Q, &U, &F, &initial_state, accepting_states, transitions, INVALID_PID, word + offset + 1, next_state);
             children_created += 1;
         }
 
