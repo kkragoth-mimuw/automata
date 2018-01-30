@@ -1,0 +1,113 @@
+diff --git a/tester.c b/tester.c
+index 9c98901..6b01206 100644
+--- a/tester.c
++++ b/tester.c
+@@ -45,14 +45,14 @@ void sigint_handler(int sign) {
+ }
+ 
+ static void mq_notify_callback(union sigval sv) {
+-    memset(buffer, 0, BUF_SIZE);
+-    memset(word, 0, BUF_SIZE);
+-
+     struct mq_attr attr;
+ 
+     bool registered_for_mq_update = false;
+ 
+     do {
++        memset(buffer, 0, BUF_SIZE);
++        memset(word, 0, BUF_SIZE);
++
+         if (mq_receive(my_mq_desc, buffer, BUF_SIZE, NULL) < 0) {
+             panic_cleanup();
+             syserr("Error in rec: ");
+@@ -179,6 +179,9 @@ int main() {
+         if (strcmp(buffer, ENDING_SYMBOL) != 0) {
+             snt += 1;
+         }
++        else {
++            finished = true;
++        }
+     }
+ 
+     if (rcd < snt) {
+diff --git a/validator.c b/validator.c
+index 35a755b..c81b419 100644
+--- a/validator.c
++++ b/validator.c
+@@ -24,7 +24,7 @@ int snt, rcd, acc;
+ 
+ struct {
+     long pid;
+-    mqd_t mq_desc;
++    char mq_name[100];
+     int p;
+     int q;
+ } testers[MAX_TESTERS];
+@@ -38,7 +38,6 @@ void panic_cleanup() {
+         if (testers[i].pid == 0) {
+             break;
+         }
+-        mq_close(testers[i].mq_desc);
+         kill((pid_t) testers[i].pid, SIGINT);
+     }
+ }
+@@ -111,18 +110,10 @@ int main() {
+             for (int i = 0; i < MAX_TESTERS; i++) {
+                 if (testers[i].pid == 0) {
+                     testers[i].pid = pid;
+-                    sprintf(tester_mq_name, "%s%s",TESTER_MQ_PREFIX,  buffer);
+-                    testers[i].mq_desc = mq_open(tester_mq_name, O_WRONLY);
+-
+-                    if (testers[i].mq_desc == (mqd_t) -1) {
+-                        syserr("Error in mq_open");
+-                    }
+-
++                    sprintf(testers[i].mq_name, "%s%s", TESTER_MQ_PREFIX,  buffer);
+                     testers[i].p = 0;
+                     testers[i].q = 0;
+-
+                     tester_position = i;
+-
+                     break;
+                 }
+             }
+@@ -157,10 +148,20 @@ int main() {
+                 syserr("Error in wait\n");
+             }
+ 
+-            if(mq_send(testers[tester_position].mq_desc, message, strlen(message), 1)) {
++            mqd_t mq_desc = mq_open(testers[tester_position].mq_name, O_WRONLY);
++
++            if (mq_desc == (mqd_t) - 1) { // probably tester is gone; continue
++                continue;
++            }
++
++            if(mq_send(mq_desc, message, strlen(message), 1)) {
+                 panic_cleanup();
+                 syserr("Error in mq_send");
+             }
++
++            if (mq_close(mq_desc)) {
++                syserr("close");
++            }
+         }
+         else if (accept_new_words && strstr(message, INTRODUCTION) == NULL) {
+             rcd += 1;
+@@ -178,9 +179,15 @@ int main() {
+             break;
+         }
+ 
+-        mq_send(testers[i].mq_desc, ENDING_SYMBOL, strlen(ENDING_SYMBOL), 1); // dont check; some testers might have already gone away
++        mqd_t mq_desc = mq_open(testers[i].mq_name, O_WRONLY);
++
++        if (mq_desc == (mqd_t) - 1) { // probably tester is gone; continue
++            continue;
++        }
++
++        mq_send(mq_desc, ENDING_SYMBOL, strlen(ENDING_SYMBOL), 1); // dont check; some testers might have already gone away
+ 
+-        mq_close(testers[i].mq_desc);
++        mq_close(mq_desc);
+ 
+         printf("PID: %ld\nRcd: %d\nAcc: %d\n", testers[i].pid, testers[i].p, testers[i].q);
+     }

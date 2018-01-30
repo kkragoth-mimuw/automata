@@ -45,14 +45,14 @@ void sigint_handler(int sign) {
 }
 
 static void mq_notify_callback(union sigval sv) {
-    memset(buffer, 0, BUF_SIZE);
-    memset(word, 0, BUF_SIZE);
-
     struct mq_attr attr;
 
     bool registered_for_mq_update = false;
 
     do {
+        memset(buffer, 0, BUF_SIZE);
+        memset(word, 0, BUF_SIZE);
+
         if (mq_receive(my_mq_desc, buffer, BUF_SIZE, NULL) < 0) {
             panic_cleanup();
             syserr("Error in rec: ");
@@ -178,6 +178,9 @@ int main() {
 
         if (strcmp(buffer, ENDING_SYMBOL) != 0) {
             snt += 1;
+        }
+        else {
+            finished = true;
         }
     }
 
